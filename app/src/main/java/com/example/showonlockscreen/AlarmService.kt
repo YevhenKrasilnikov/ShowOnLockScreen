@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.example.showonlockscreen.showNotification
 
 class AlarmService : Service() {
 
@@ -33,6 +32,6 @@ class AlarmService : Service() {
         sendBroadcast(Intent("ALARM"))
 //        this.scheduleNotification()
         this.showNotification(this)
-        return START_STICKY
+        return START_NOT_STICKY
     }
 }

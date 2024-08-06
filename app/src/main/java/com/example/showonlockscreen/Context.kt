@@ -1,6 +1,7 @@
 package com.example.showonlockscreen
 
 import android.app.AlarmManager
+import android.app.AlarmManager.RTC_WAKEUP
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -27,7 +28,7 @@ fun Context.setState() {
 
     with(alarmManager) {
         setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
+            RTC_WAKEUP,
             timeInMillis,
             getBroadcast(
                 this@setState,
@@ -45,24 +46,32 @@ fun Context.setService() {
     val timeInMillis = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(WAKE_TIME)
 
     with(alarmManager) {
-        setAlarmClock(
-            AlarmManager.AlarmClockInfo(
-                timeInMillis,
-                PendingIntent.getActivity(
-                    this@setService,
-                    0,
-                    Intent(this@setService, LockscreenActivity::class.java),
-                    FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
-                )
-            ), PendingIntent.getService(
-                this@setService,
-                0,
-                Intent(this@setService, AlarmService::class.java).addFlags(
-                    FLAG_RECEIVER_FOREGROUND
-                ),
-                FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
-            )
-        )
+        setExact(RTC_WAKEUP, timeInMillis, PendingIntent.getService(
+            this@setService,
+            0,
+            Intent(this@setService, AlarmService::class.java).addFlags(
+                FLAG_RECEIVER_FOREGROUND
+            ),
+            FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
+        ))
+//        setAlarmClock(
+//            AlarmManager.AlarmClockInfo(
+//                timeInMillis,
+//                PendingIntent.getActivity(
+//                    this@setService,
+//                    0,
+//                    Intent(this@setService, LockscreenActivity::class.java),
+//                    FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
+//                )
+//            ), PendingIntent.getService(
+//                this@setService,
+//                0,
+//                Intent(this@setService, AlarmService::class.java).addFlags(
+//                    FLAG_RECEIVER_FOREGROUND
+//                ),
+//                FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
+//            )
+//        )
     }
 }
 
@@ -125,11 +134,17 @@ fun Context.showNotification(service: AlarmService) {
         .setCategory(CATEGORY_CALL)
         .setVisibility(VISIBILITY_PUBLIC)
         .setShowWhen(false)
+        .setContentIntent(PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, LockscreenActivity::class.java),
+            FLAG_IMMUTABLE
+        ))
         .setFullScreenIntent(
             PendingIntent.getActivity(
                 this,
                 0,
-                Intent(this, LockscreenActivity::class.java),
+                Intent(this, LockscreenActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION),
                 FLAG_IMMUTABLE
             ), true
         )
@@ -146,8 +161,7 @@ fun Context.showNotification(service: AlarmService) {
 private fun NotificationManager.buildChannel() {
     val name = "example"
     val descriptionText = "demo"
-    val importance = NotificationManager.IMPORTANCE_HIGH
-    val channel = NotificationChannel("channelId", name, importance).apply {
+    val channel = NotificationChannel("channelId", name, NotificationManager.IMPORTANCE_HIGH).apply {
         description = descriptionText
     }
 
