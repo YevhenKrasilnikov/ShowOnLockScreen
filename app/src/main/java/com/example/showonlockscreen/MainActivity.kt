@@ -25,11 +25,14 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
-            Box(Modifier.fillMaxSize().padding(48.dp), contentAlignment = Alignment.Center) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(48.dp), contentAlignment = Alignment.Center) {
                 Button(modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                    onClick = { scheduleNotification() }) {
+                    onClick = { setState(); this@MainActivity.finishAndRemoveTask() }) {
                     Text("Show screen with delay")
                 }
             }

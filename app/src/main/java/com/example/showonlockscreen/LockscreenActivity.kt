@@ -1,7 +1,11 @@
 package com.example.showonlockscreen
 
 import android.app.NotificationManager
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 class LockscreenActivity : ComponentActivity() {
+
+    private val connection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+
+        }
+    }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -37,7 +51,8 @@ class LockscreenActivity : ComponentActivity() {
             Box(
                 Modifier
                     .fillMaxSize()
-                    .padding(32.dp), contentAlignment = Alignment.Center) {
+                    .padding(32.dp), contentAlignment = Alignment.Center
+            ) {
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(.6f)
@@ -50,9 +65,20 @@ class LockscreenActivity : ComponentActivity() {
     }
 
     private fun onFinishClick() {
+        release()
         val notificationManager =
             getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
         finish()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bindService(Intent(this, AlarmService::class.java), connection, BIND_AUTO_CREATE)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unbindService(connection)
     }
 }
