@@ -163,6 +163,7 @@ private fun NotificationManager.buildChannel() {
     val descriptionText = "demo"
     val channel = NotificationChannel("channelId", name, NotificationManager.IMPORTANCE_HIGH).apply {
         description = descriptionText
+        lockscreenVisibility = VISIBILITY_PUBLIC
     }
 
     createNotificationChannel(channel)
