@@ -31,19 +31,32 @@
             android:theme="@style/Theme.ShowOnLockScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SET_ALARM" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <activity android:name="com.example.showonlockscreen.LockscreenActivity"
+            android:exported="true"
             android:excludeFromRecents="true"
             android:directBootAware="true"
             android:resizeableActivity="false"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
+            android:permission="android.permission.DISABLE_KEYGUARD"
             android:taskAffinity=""
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.DISMISS_ALARM" />
+                <action android:name="android.intent.action.SHOW_ALARMS" />
+                <action android:name="android.intent.action.SNOOZE_ALARM" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
 
         <receiver android:name="com.example.showonlockscreen.Receiver"
             android:directBootAware="true"/>
